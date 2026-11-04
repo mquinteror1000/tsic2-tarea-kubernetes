@@ -2,9 +2,18 @@
 ### previo - Inventario de equipos
 **Con linux como hipervisor:**
 - Listar mis máquinas: 
+```bash
+virsh list --all
+```
 - Clonar una VM:
-- Conocer la IP de una VM:
-
+```bash
+virt-clone --original rocky9 --name rocky9-clone --auto-clone
+```
+- Conocer la IP de las VM que se encuentran en ejecución
+```bash
+virsh net-dhcp-leases default
+```
+- Eliminar una VM
 ### 1 - configurar hostnames
 **En el master**
 1. Configurar hostname
