@@ -201,4 +201,17 @@ firewall-cmd --permanent --add-port=4789/udp
 firewall-cmd --reload
 ```
 
-##### 3.3 - Abrir puertos en worker01 ( 192.168.122.196 )
+##### 3.3 - Abrir los puertos en worker01 ( 192.168.122.196 )
+
+conectarse a master01
+
+```bash
+ssh worker01
+```
+
+Abrir los siguientes puertos con firewall-cmd
+
+```bash
+firewall-cmd --permanent --add-port={179,10250,30000-32767}/tcp
+firewall-cmd --permanent --add-port=4789/udp
+```
