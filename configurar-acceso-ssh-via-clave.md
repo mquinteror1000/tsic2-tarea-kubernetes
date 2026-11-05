@@ -71,3 +71,5 @@ ssh worker01
 ```
 
 ahora deja pasar directo a **worker01**
+
+# 

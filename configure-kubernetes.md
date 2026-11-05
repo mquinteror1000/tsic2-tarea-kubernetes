@@ -215,3 +215,90 @@ Abrir los siguientes puertos con firewall-cmd
 firewall-cmd --permanent --add-port={179,10250,30000-32767}/tcp
 firewall-cmd --permanent --add-port=4789/udp
 ```
+
+### 4 - Parámetros del Kernel
+
+**modprobe**: Es una utilidad para modificar ( cargar/descargar ) parámetro del Kernel de linux
+
+##### 4.1 - Cargar lo parámetros ( overlay y br_netfilter )
+
+##### ( en master01 )
+
+Usando modprobe 
+
+```bash
+modprobe overlay
+modprobe br_netfilter
+```
+
+Para hacerlo permanente editar el archivo **/etc/modules-load.d/containerd.conf** 
+
+y colocar el siguiente contenido
+
+```ini
+overlay
+br_netfilter
+```
+
+o bien ejecutar el siguiente comando para inyectarlo usando un [here document]([How to create documents with Bash scripts](https://www.redhat.com/en/blog/bash-here-documents))
+
+```bash
+sudo cat <<EOF > /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
+```
+
+##### (Realizar los mismos pasos en worker01 )
+
+##### 4.2 - Parámetros de manejo IP
+
+##### (En master01)
+
+gemini ha recomendado usar el archivo /etc/sysctl.d/99-kubernetes-cri.conf en lugar de /etc/syctl.d/k8s.conf , le harémos caso.
+
+Crear el archivo de configuración **/etc/sysctl.d/99-kubernetes-cri.conf**
+
+y colocar los siguientes parámetros
+
+```ini
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+```
+
+o bien ejecutar este here document  que hace lo mismo
+
+```bash
+sudo cat <<EOF > /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+```
+
+Aplicar los cambios
+
+```bash
+sudo sysctl --system
+```
+
+##### 4.3 - Comprobar
+
+Comprobar que haya funcionado
+
+```bash
+sysctl net.ipv4.ip_forward net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables
+```
+
+ha de salir algo asi:
+
+```textile
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+```
+
+##### Hacer lo mismo en ( worker01 )
+
+### 5 - Instalar Containerd
